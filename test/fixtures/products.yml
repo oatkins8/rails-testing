@@ -6,6 +6,9 @@ roadstr:
   name: "Roadstr"
   tagline: "Rent a vintage car"
 
+# NOTES 3
+
+
 # in tests - seperate db
 # seeds problem - they are slow
 # fixtures - way to quickly insert data using a yml file
@@ -20,3 +23,17 @@ roadstr:
 # Failure:
 # ProductsTest#test_visiting_the_index [/Users/ollieatkins/code/oatkins8/rails-testing/test/system/products_test.rb:8]:
 # expected to find visible css "h1" with text "Awesome Products" but there were no matches. Also found "NoMethodError in Products#index", which matched the selector but not all filters.
+
+# once the test has passed - you can push to heroku confident you won't have any errors
+
+
+# NOTES 5
+
+# you can add erb to fixtures
+# e.g.
+
+<% 1.upto(5) do |i| %>
+product_<%= i %>:
+  name: <%= Faker::Company.name %>
+  tagline: <%= Faker::Company.catch_phrase %>
+<% end %>
