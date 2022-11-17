@@ -1,0 +1,22 @@
+# test/fixtures/products.yml
+skello: # name of the hash
+  name: "Skello" # properties of the hash ...
+  tagline: "Manage your staff calendar"
+roadstr:
+  name: "Roadstr"
+  tagline: "Rent a vintage car"
+
+# in tests - seperate db
+# seeds problem - they are slow
+# fixtures - way to quickly insert data using a yml file
+# yml very important in testing and devops - looks like json
+# name of the yml file must match the table (e.g. products)
+# seeds use active record (which slows it down)
+# fixtures insert the data directly into the sql (faster)
+
+# now when you run the tests ^ this data will be injected into the products table
+# after inserting the data - we see the test catch the problem
+
+# Failure:
+# ProductsTest#test_visiting_the_index [/Users/ollieatkins/code/oatkins8/rails-testing/test/system/products_test.rb:8]:
+# expected to find visible css "h1" with text "Awesome Products" but there were no matches. Also found "NoMethodError in Products#index", which matched the selector but not all filters.
