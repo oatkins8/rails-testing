@@ -16,14 +16,16 @@ class ProductsTest < ApplicationSystemTestCase
   test "lets a signed in user create a new product" do
     login_as users(:george) # Warden::TestHelpers (see test_helper.rb)
     visit "/products/new"
-    # save_screenshot
+    # save_and_open_screenshot
 
     fill_in "product_name", with: "Le Wagon"
     fill_in "product_tagline", with: "Change your life: Learn to code"
-    # save_screenshot
+    # save_and_open_screenshot
+
 
     click_on "Create Product"
-    # save_screenshot
+    # save_and_open_screenshot
+
 
     # should be directed back to the Home with a new product
     assert_text "Change your life: Learn to code"

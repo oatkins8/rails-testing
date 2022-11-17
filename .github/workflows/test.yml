@@ -1,0 +1,22 @@
+name: Test # name of the workflow
+
+# when do we trigger this workflow?
+on: [push]
+
+jobs: # usually one workflow has one job
+  test:
+    env: # sets the environment for the machine that will run the workflow
+      RAILS_ENV: test
+      NODE_ENV: test
+    runs-on: ubuntu-latest  # github gives you a virtual machine just for the time needed to run the workflow
+    steps:
+      - name: Checkout repository # copies your code into a runner VM
+        uses: actions/checkout@v2 # short for https://github.com/actions/checkout
+      - name: Hello World!
+        run: echo "Hello World!" # runs the script
+
+
+# NOTES 8 - cont int with github
+
+# create a folder in the root of the project called .github/workflows
+# everything to do with devops is yml
