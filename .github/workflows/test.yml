@@ -1,22 +1,87 @@
-name: Test # name of the workflow
+# name: Test # name of the workflow
 
 # when do we trigger this workflow?
-on: [push]
+# on: [push]
 
-jobs: # usually one workflow has one job
-  test:
-    env: # sets the environment for the machine that will run the workflow
-      RAILS_ENV: test
-      NODE_ENV: test
-    runs-on: ubuntu-latest  # github gives you a virtual machine just for the time needed to run the workflow
-    steps:
-      - name: Checkout repository # copies your code into a runner VM
-        uses: actions/checkout@v2 # short for https://github.com/actions/checkout
-      - name: Hello World!
-        run: echo "Hello World!" # runs the script
+# jobs: # usually one workflow has one job
+#   test:
+#     env: # sets the environment for the machine that will run the workflow
+#       RAILS_ENV: test
+#       NODE_ENV: test
+#     runs-on: ubuntu-latest  # the runner - github gives you a virtual machine just for the time needed to run the workflow
+#     steps: # here you give instructions to the runner
+#       - name: Checkout repository # copies your code into a runner VM (virtual machine)
+#         uses: actions/checkout@v2 # short for https://github.com/actions/checkout
+#       - name: Hello World!
+#         run: echo "Hello World!" # runs the script
 
 
 # NOTES 8 - cont int with github
 
 # create a folder in the root of the project called .github/workflows
 # everything to do with devops is yml
+
+
+name: Test
+
+# triggers on
+on: [push]
+
+jobs:
+  test:
+    env: # setting the environment - only want run rails in the test environment
+      RAILS_ENV: test
+      NODE_ENV: test
+    runs-on: ubuntu-latest # runner
+    services:
+      # Label used to access the service container
+      postgres: # runner needs to have postgres because it's what the app uses
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout repository # copies repo in runner
+        uses: actions/checkout@v2 # short for https://github.com/actions/checkout
+      - name: Set up Ruby # sets up ruby based on this file - all the gems from your gem file
+        uses: ruby/setup-ruby@v1 # short for https://github.com/ruby/setup-ruby
+        with:
+          # runs 'bundle install' and caches installed gems automatically
+          bundler-cache: true # means next time you run it doesn't have to build all the node dependencies from scratch
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - name: Get Yarn cache directory path
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Setup cache key and directory for node_modules cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Yarn install
+        run: yarn install --frozen-lockfile
+      - name: Prepare DB # build the database for the test environment
+        run: |
+          cp config/database.github.yml config/database.yml
+          bundle exec rails db:create db:migrate
+        # prep done ^^^ we can now test (see below) - run model and system tests
+      - name: Run model tests
+        run: bundle exec rails test
+      - name: Run system tests
+        run: bundle exec rails test:system
+
+    # NOTES 9
+
+    # in order to build the db for the test - need to create another file in the config db
+    # config db works with your computer - need a seperate setup for your runner

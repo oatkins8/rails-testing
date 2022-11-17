@@ -1,0 +1,10 @@
+test:
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  port: 5432
+  username: postgres
+  password: postgres
+  database: rails-testing
+
+  # NOTES 9 - NEED TO CREATE SEPERATE DB FOR TESTING
